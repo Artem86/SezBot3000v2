@@ -32,7 +32,7 @@ namespace SezBot3000v2.Services
             if (message.Type == MessageType.TextMessage)
             {
                 // Echo each Message
-                await _botService.Client.SendTextMessageAsync(message.Chat.Id, message.Text);
+                await _botService.Client.SendTextMessageAsync(message.Chat.Id, $"хую{message.Text}");
             }
             else if (message.Type == MessageType.PhotoMessage)
             {

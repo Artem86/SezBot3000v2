@@ -6,7 +6,7 @@ using Telegram.Bot.Types;
 namespace SezBot3000v2.Controllers
 {
     ///[Produces("application/json")]
-    [Route("api/Update")]
+    ///[Route("api/Update")]
     public class UpdateController : Controller
     {
         private readonly IUpdateService _updateService;
@@ -18,7 +18,7 @@ namespace SezBot3000v2.Controllers
 
         // POST api/update
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Update update)
+        public async Task<IActionResult> Message([FromBody]Update update)
         {
             await _updateService.EchoAsync(update);
             return Ok();
