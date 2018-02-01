@@ -11,7 +11,7 @@ namespace SezBot3000v2.Services
         {
             _config = config.Value;
             Client = new TelegramBotClient(_config.BotToken);
-            Client.SetWebhookAsync("https://sezbot3000.azurewebsites.net/update/message").Wait();
+            Client.SetWebhookAsync(_config.WebHook).Wait();
         }
 
         public TelegramBotClient Client { get; }

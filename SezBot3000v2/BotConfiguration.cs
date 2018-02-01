@@ -3,5 +3,6 @@
     public class BotConfiguration
     {
         public string BotToken { get; set; }
+        public string WebHook { get; set; }
     }
 }

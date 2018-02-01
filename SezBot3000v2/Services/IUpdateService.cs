@@ -5,6 +5,6 @@ namespace SezBot3000v2.Services
 {
     public interface IUpdateService
     {
-        Task EchoAsync(Update update);
+        Task Update(Update update);
     }
 }

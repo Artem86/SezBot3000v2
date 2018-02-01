@@ -20,7 +20,7 @@ namespace SezBot3000v2.Controllers
         [HttpPost]
         public async Task<IActionResult> Message([FromBody]Update update)
         {
-            await _updateService.EchoAsync(update);
+            await _updateService.Update(update);
             return Ok();
         }
     }
