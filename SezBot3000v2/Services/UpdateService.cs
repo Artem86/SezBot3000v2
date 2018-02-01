@@ -22,7 +22,9 @@ namespace SezBot3000v2.Services
             "сеза",
             "сезу",
             "бот",
-            "bot"
+            "bot",
+            "порк",
+            "бух"
         };
         private IEnumerable<string> _defaultReplies = new List<string>
         {
@@ -44,14 +46,40 @@ namespace SezBot3000v2.Services
             "Заебали))",
             "У меня мало места пздц",
             "Я надеялся про вопрос о сиськах миры",
-            "Вы льётесь с каток"
+            "Вы льётесь с каток",
+            "Вы заебали",
+            "5 таблеток фенозепама это много или мало?",
+            "Я спал а теперь на работу",
+            "В ваху будет кто?",
+            "Я бы крыс порезал, но я на работе",
+            "Я сегодня бомжиху порол, тема",
+            "Щас бы катнуть всем вместе, но я на работе",
+            "Сириосли?",
+            "Абсолютли",
+            "Хули вы без меня катаете опять?",
+            "Ну хуй знает",
+            "Плавали знаем",
+            "Ну дык",
+            "Годится",
+            "Ну",
+            "Ясенхер",
+            "Канешн",
+            "Ноуп"
         };
         private IEnumerable<KeyValuePair<string, string>> _replyTemplates = new List<KeyValuePair<string, string>> {
+            new KeyValuePair<string, string>("катку", "В команду позовите бля"),
             new KeyValuePair<string, string>("катку", "вы всё равно катаете в жало"),
             new KeyValuePair<string, string>("дьябл", "дьябла норм"),
             new KeyValuePair<string, string>("гирз", "гирзы норм"),
             new KeyValuePair<string, string>("катать", "вы всё равно катаете в жало"),
+            new KeyValuePair<string, string>("катать", "В команду позовите бля"),
             new KeyValuePair<string, string>("каточку", "вы всё равно катаете в жало"),
+            new KeyValuePair<string, string>("каточку", "В команду позовите бля"),
+            new KeyValuePair<string, string>("мира", "охуенная была история"),
+            new KeyValuePair<string, string>("миры", "охуенная была история"),
+            new KeyValuePair<string, string>("миру", "охуенная была история"),
+            new KeyValuePair<string, string>("мире", "охуенная была история"),
+            new KeyValuePair<string, string>("мирой", "охуенная была история"),
         };
 
         public UpdateService(IBotService botService, ILogger<UpdateService> logger)
@@ -94,7 +122,9 @@ namespace SezBot3000v2.Services
                     await file.FileStream.CopyToAsync(saveImageStream);
                 }
 
-                await _botService.Client.SendTextMessageAsync(message.Chat.Id, "пикча норм");
+                var sticker = FileToSendExtensions.ToFileToSend(new FileStream("Stickers/frogSticker.webp", FileMode.Open), "frogSticker");
+                await _botService.Client.SendStickerAsync(message.Chat.Id, sticker);
+                    ////SendTextMessageAsync(message.Chat.Id, "пикча норм");
             }
         }
 
