@@ -23,11 +23,11 @@ namespace SezBot3000v2
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-
             services.AddScoped<IUpdateService, UpdateService>();
             services.AddSingleton<IBotService, BotService>();
 
             services.Configure<BotConfiguration>(Configuration.GetSection("BotConfiguration"));
+            services.Configure<BotReplyBank>(Configuration.GetSection("BotReplyBank"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,9 +42,7 @@ namespace SezBot3000v2
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
             app.UseStaticFiles();
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
