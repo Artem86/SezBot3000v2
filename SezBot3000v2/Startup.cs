@@ -25,6 +25,7 @@ namespace SezBot3000v2
             services.AddMvc();
             services.AddScoped<IUpdateService, UpdateService>();
             services.AddSingleton<IBotService, BotService>();
+            services.AddOptions();
 
             services.Configure<BotConfiguration>(Configuration.GetSection("BotConfiguration"));
             services.Configure<BotReplyBank>(Configuration.GetSection("BotReplyBank"));

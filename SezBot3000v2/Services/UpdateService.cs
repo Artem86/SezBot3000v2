@@ -14,17 +14,19 @@ namespace SezBot3000v2.Services
     {
         private readonly IBotService _botService;
         private readonly ILogger<UpdateService> _logger;
+        private BotReplyBank _botReplyBank;
         private IEnumerable<string> _anchor;
         private IEnumerable<string> _defaultReplies;
-        private IEnumerable<KeyValuePair<string, string>> _contextReplies;
+        private List<KeyValuePair<string, string>> _contextReplies;
 
         public UpdateService(IBotService botService, ILogger<UpdateService> logger, IOptions<BotReplyBank> botReplyBank)
         {
             _botService = botService;
             _logger = logger;
-            _anchor = botReplyBank.Value.ShouldReplyAnchors;
-            _defaultReplies = botReplyBank.Value.DefaultReply;
-            _contextReplies = botReplyBank.Value.ContextReply;
+            _botReplyBank = botReplyBank.Value;
+            _anchor = _botReplyBank.ShouldReplyAnchors;
+            _defaultReplies = _botReplyBank.DefaultReply;
+            _contextReplies = _botReplyBank.ContextReply;
         }
 
         public async Task Update(Update update)

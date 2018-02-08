@@ -6,6 +6,7 @@ namespace SezBot3000v2
     {
         public IEnumerable<string> ShouldReplyAnchors;
         public IEnumerable<string> DefaultReply;
-        public IEnumerable<KeyValuePair<string, string>> ContextReply;
+        public List<KeyValuePair<string, string>> ContextReply;
+
     }
 }
