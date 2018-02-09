@@ -4,9 +4,8 @@ namespace SezBot3000v2
 {
     public class BotReplyBank
     {
-        public IEnumerable<string> ShouldReplyAnchors;
-        public IEnumerable<string> DefaultReply;
-        public List<KeyValuePair<string, string>> ContextReply;
-
+        public IEnumerable<string> ShouldReplyAnchors { get; set; }
+        public IEnumerable<string> DefaultReply { get; set; }
+        public IDictionary<string, IEnumerable<string>> ContextReply { get; set; }
     }
 }

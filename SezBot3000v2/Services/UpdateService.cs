@@ -17,7 +17,7 @@ namespace SezBot3000v2.Services
         private BotReplyBank _botReplyBank;
         private IEnumerable<string> _anchor;
         private IEnumerable<string> _defaultReplies;
-        private List<KeyValuePair<string, string>> _contextReplies;
+        private IDictionary<string, IEnumerable<string>> _contextReplies;
 
         public UpdateService(IBotService botService, ILogger<UpdateService> logger, IOptions<BotReplyBank> botReplyBank)
         {
@@ -78,12 +78,12 @@ namespace SezBot3000v2.Services
 
         private string GetReply(string message)
         {
-            var replyTemplateQuery = _contextReplies.Where(_ => message.Contains(_.Key));
+            var replyTemplateQuery = _contextReplies.Where(_ => message.Contains(_.Key)).SelectMany(_ => _.Value);
             var r = new Random(DateTime.Now.Millisecond);
             if (!replyTemplateQuery.Any())
                 return _defaultReplies.ElementAt(r.Next(0, _defaultReplies.Count()));
             var replyPosition = r.Next(0, replyTemplateQuery.Count());
-            return replyTemplateQuery.ElementAt(replyPosition).Value;
+            return replyTemplateQuery.ElementAt(replyPosition);
         }
 
     }
