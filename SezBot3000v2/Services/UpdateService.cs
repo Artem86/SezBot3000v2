@@ -15,18 +15,12 @@ namespace SezBot3000v2.Services
         private readonly IBotService _botService;
         private readonly ILogger<UpdateService> _logger;
         private BotReplyBank _botReplyBank;
-        private IEnumerable<string> _anchor;
-        private IEnumerable<string> _defaultReplies;
-        private IDictionary<string, IEnumerable<string>> _contextReplies;
 
         public UpdateService(IBotService botService, ILogger<UpdateService> logger, IOptions<BotReplyBank> botReplyBank)
         {
             _botService = botService;
             _logger = logger;
             _botReplyBank = botReplyBank.Value;
-            _anchor = _botReplyBank.ShouldReplyAnchors;
-            _defaultReplies = _botReplyBank.DefaultReply;
-            _contextReplies = _botReplyBank.ContextReply;
         }
 
         public async Task Update(Update update)
@@ -44,47 +38,110 @@ namespace SezBot3000v2.Services
             {
                 if (ShouldReply(message.Text))
                 {
-                    var text = GetReply(message.Text);
+
+                    //if (await SendMusicReply(message))
+                    //{
+                    //    return;
+                    //}
+                    //await SendStickerReply(message);
+                    var text = GetTextReply(message.Text);
                     await _botService.Client.SendTextMessageAsync(message.Chat.Id, text);
+
                 }
                     
             }
+            
+            //else if (message.Type == MessageType.PhotoMessage)
+            //{
+            //    // Download Photo
+            //    var fileId = message.Photo.LastOrDefault()?.FileId;
+            //    var file = await _botService.Client.GetFileAsync(fileId);
 
-            else if (message.Type == MessageType.PhotoMessage)
-            {
-                // Download Photo
-                var fileId = message.Photo.LastOrDefault()?.FileId;
-                var file = await _botService.Client.GetFileAsync(fileId);
+            //    var filename = file.FileId + "." + file.FilePath.Split('.').Last();
 
-                var filename = file.FileId + "." + file.FilePath.Split('.').Last();
-
-                using (var saveImageStream = System.IO.File.Open(filename, FileMode.Create))
-                {
-                    await file.FileStream.CopyToAsync(saveImageStream);
-                }
-
-                var sticker = FileToSendExtensions.ToFileToSend(new FileStream("Stickers/frogSticker.webp", FileMode.Open), "frogSticker");
-                await _botService.Client.SendStickerAsync(message.Chat.Id, sticker);
-                    ////SendTextMessageAsync(message.Chat.Id, "пикча норм");
-            }
+            //    using (var saveImageStream = System.IO.File.Open(filename, FileMode.Create))
+            //    {
+            //        await file.FileStream.CopyToAsync(saveImageStream);
+            //    }
+            //        ////SendTextMessageAsync(message.Chat.Id, "пикча норм");
+            //}
         }
 
         private bool ShouldReply(string message)
         {
             var words = message.ToLower().Split(' ').ToList();
             words.ForEach(word => word.Replace(" ", ""));
-            return words.Any(word => _anchor.Any(a => word.Contains(a)));
+            return words.Any(word => _botReplyBank.ShouldReplyAnchors.Any(a => word.Contains(a)));
         }
 
-        private string GetReply(string message)
+        private string GetTextReply(string message)
         {
-            var replyTemplateQuery = _contextReplies.Where(_ => message.Contains(_.Key)).SelectMany(_ => _.Value);
-            var r = new Random(DateTime.Now.Millisecond);
+            var replyTemplateQuery = _botReplyBank.ContextReply.Where(cr => message.Contains(cr.Key)).SelectMany(cr => cr.Value);
+            var r = new Random(DateTime.Now.Millisecond);   
             if (!replyTemplateQuery.Any())
-                return _defaultReplies.ElementAt(r.Next(0, _defaultReplies.Count()));
+                return _botReplyBank.DefaultReply.ElementAt(r.Next(0, _botReplyBank.DefaultReply.Count()));
             var replyPosition = r.Next(0, replyTemplateQuery.Count());
             return replyTemplateQuery.ElementAt(replyPosition);
         }
 
+        private async Task<bool> SendStickerReply(Message message)
+        {
+            var words = message.Text.ToLower().Split(' ').ToList();
+            words.ForEach(word => word.Replace(" ", ""));
+            var isReply = words.Any(word => _botReplyBank.ContextSticker.Keys.Any(a => word.Contains(a)));
+
+            if (isReply)
+            {
+                var replyTemplateQuery = _botReplyBank.ContextSticker.Where(cs => message.Text.Contains(cs.Key)).SelectMany(cr => cr.Value);
+                var r = new Random(DateTime.Now.Millisecond);
+                var replyPosition = r.Next(0, replyTemplateQuery.Count());
+                string stickerPath = replyTemplateQuery.ElementAt(replyPosition);
+                FileStream fs = new FileStream(stickerPath, FileMode.Open);
+                var stickerToSend = FileToSendExtensions.ToFileToSend(fs, "frogsticker");
+                await _botService.Client.SendStickerAsync(message.Chat.Id, stickerToSend);
+                fs.Dispose();
+                return true;
+            }
+            return false;
+        }
+
+        private async Task<bool> SendMusicReply(Message message)
+        {
+            var words = message.Text.ToLower().Split(' ').ToList();
+            words.ForEach(word => word.Replace(" ", ""));
+            var isReply = words.Any(word => _botReplyBank.ContextMusic.Keys.Any(a => word.Contains(a)));
+
+            if (isReply)
+            {
+                var parameters = _botReplyBank.ContextMusic.Where(cm => message.Text.Contains(cm.Key)).SelectMany(cm => cm.Value);
+                string musicPath = parameters.ElementAt(0);
+                string comment = parameters.ElementAt(1);
+                int SongTime = 0;
+                int.TryParse(parameters.ElementAt(2), out SongTime);
+                string artist = parameters.ElementAt(3);
+                string song = parameters.ElementAt(4);
+                FileStream fs = new FileStream(musicPath, FileMode.Open);
+                var musicToSend = FileToSendExtensions.ToFileToSend(fs, "music");
+                await _botService.Client.SendAudioAsync(message.Chat.Id, musicToSend, comment, SongTime, artist, song);
+                return true;
+            }
+            return false;
+        }
+       
+
+        ///uncomment for test purposes
+        //public async Task Test()
+        //{
+        //    var parameters = _botReplyBank.ContextMusic.Where(cm => cm.Value.Contains("кухн")).SelectMany(cm => cm.Value);
+        //    string musicPath = parameters.ElementAt(0);
+        //    string comment = parameters.ElementAt(1);
+        //    int SongTime = 0;
+        //    int.TryParse(parameters.ElementAt(2), out SongTime);
+        //    string artist = parameters.ElementAt(3);
+        //    string song = parameters.ElementAt(4);
+        //    FileStream fs = new FileStream(musicPath, FileMode.Open);
+        //    var musicToSend = FileToSendExtensions.ToFileToSend(fs, "music");
+        //    await _botService.Client.SendAudioAsync(310954670, musicToSend, comment, SongTime, artist, song);
+        //}
     }
 }
