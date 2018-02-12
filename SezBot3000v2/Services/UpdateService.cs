@@ -34,7 +34,7 @@ namespace SezBot3000v2.Services
 
             var message = update.Message;
 
-            _logger.LogInformation("Received Message from {0}", message.Chat.Id);
+            _logger.LogInformation($"Received Message from {message.Chat.FirstName} {message.Chat.LastName} ({message.Chat.Username} - id: {message.Chat.Id})");
 
             if (!message.HasAnchor(_botReplyBank.ShouldReplyAnchors)) return;
 
@@ -78,10 +78,10 @@ namespace SezBot3000v2.Services
             if (!message.HasAnchor(_botReplyBank.ContextSticker)) return false;
 
             var replyTemplateQuery = _botReplyBank.ContextSticker.Where(cs => message.Text.Contains(cs.Key)).SelectMany(cr => cr.Value);
-            string stickerPath = replyTemplateQuery.GetRandomElement();
-            using (var fs = new FileStream(stickerPath, FileMode.Open))
+            var sticker = replyTemplateQuery.GetRandomElement();
+            using (var fs = new FileStream(sticker.Path, FileMode.Open))
             {
-                var stickerToSend = FileToSendExtensions.ToFileToSend(fs, "frogsticker");
+                var stickerToSend = fs.ToFileToSend(sticker.Path);
                 await _botService.Client.SendStickerAsync(message.Chat.Id, stickerToSend);
                 return true;
             }
