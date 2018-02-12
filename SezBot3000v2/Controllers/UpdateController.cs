@@ -23,5 +23,12 @@ namespace SezBot3000v2.Controllers
             await _updateService.Update(update);
             return Ok();
         }
+
+        //// uncomment for test purposes
+        //public async Task<IActionResult> Test()
+        //{
+        //    await _updateService.Test();
+        //    return Ok();
+        //}
     }
 }

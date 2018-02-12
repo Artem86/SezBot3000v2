@@ -6,5 +6,8 @@ namespace SezBot3000v2.Services
     public interface IUpdateService
     {
         Task Update(Update update);
+
+        ///uncomment for test purposes
+        //Task Test();
     }
 }
