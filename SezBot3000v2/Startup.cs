@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SezBot3000v2.Services;
+using SezBot3000v2.Models;
 
 namespace SezBot3000v2
 {

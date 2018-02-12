@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SezBot3000v2;
+using SezBot3000v2.Models;
 using SezBot3000v2.Services;
 using System;
 using System.Collections.Generic;

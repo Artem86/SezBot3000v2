@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SezBot3000v2;
+using SezBot3000v2.Models;
 using SezBot3000v2.Services;
 using System;
 using System.Collections.Generic;
