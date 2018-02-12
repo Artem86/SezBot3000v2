@@ -8,7 +8,7 @@ namespace SezBot3000v2.Extensions
 {
     public static class MessageExtension
     {
-        public static bool HasAnchor(this Message message, IDictionary<string, IEnumerable<string>> collection)
+        public static bool HasAnchor<T>(this Message message, IDictionary<string, IEnumerable<T>> collection)
         {
             return message.SplitByWords().Any(word => collection.Keys.Any(a => word.Contains(a)));
         }

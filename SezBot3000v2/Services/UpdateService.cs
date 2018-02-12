@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SezBot3000v2.Extensions;
+using SezBot3000v2.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,7 +34,7 @@ namespace SezBot3000v2.Services
 
             var message = update.Message;
 
-            _logger.LogInformation("Received Message from {0}", message.Chat.Id);
+            _logger.LogInformation($"Received Message from {message.Chat.FirstName} {message.Chat.LastName} ({message.Chat.Username} - id: {message.Chat.Id})");
 
             if (!message.HasAnchor(_botReplyBank.ShouldReplyAnchors)) return;
 
@@ -77,10 +78,10 @@ namespace SezBot3000v2.Services
             if (!message.HasAnchor(_botReplyBank.ContextSticker)) return false;
 
             var replyTemplateQuery = _botReplyBank.ContextSticker.Where(cs => message.Text.Contains(cs.Key)).SelectMany(cr => cr.Value);
-            string stickerPath = replyTemplateQuery.GetRandomElement();
-            using (var fs = new FileStream(stickerPath, FileMode.Open))
+            var sticker = replyTemplateQuery.GetRandomElement();
+            using (var fs = new FileStream(sticker.Path, FileMode.Open))
             {
-                var stickerToSend = FileToSendExtensions.ToFileToSend(fs, "frogsticker");
+                var stickerToSend = fs.ToFileToSend(sticker.Path);
                 await _botService.Client.SendStickerAsync(message.Chat.Id, stickerToSend);
                 return true;
             }
@@ -90,17 +91,14 @@ namespace SezBot3000v2.Services
         {
             if (!message.HasAnchor(_botReplyBank.ContextMusic)) return false;
 
-            var parameters = _botReplyBank.ContextMusic.Where(cm => message.Text.Contains(cm.Key)).SelectMany(cm => cm.Value);
-            string musicPath = parameters.ElementAt(0);
-            string comment = parameters.ElementAt(1);
-            int SongTime = 0;
-            int.TryParse(parameters.ElementAt(2), out SongTime);
-            string artist = parameters.ElementAt(3);
-            string song = parameters.ElementAt(4);
-            using (var fs = new FileStream(musicPath, FileMode.Open))
+            var musicReply = _botReplyBank.ContextMusic
+                .Where(cm => message.Text.Contains(cm.Key))
+                .SelectMany(cm => cm.Value)
+                .GetRandomElement();
+            using (var fs = new FileStream(musicReply.Path, FileMode.Open))
             {
-                var musicToSend = FileToSendExtensions.ToFileToSend(fs, "music");
-                await _botService.Client.SendAudioAsync(message.Chat.Id, musicToSend, comment, SongTime, artist, song);
+                var musicToSend = fs.ToFileToSend(musicReply.Path);
+                await _botService.Client.SendAudioAsync(message.Chat.Id, musicToSend, musicReply.Caption, musicReply.Duration, musicReply.Performer, musicReply.Title);
                 return true;
             }
         }
