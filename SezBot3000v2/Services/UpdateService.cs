@@ -80,10 +80,5 @@ namespace SezBot3000v2.Services
                 return true;
             }
         }
-
-        public void Client_OnUpdate(object sender, UpdateEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

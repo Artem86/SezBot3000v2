@@ -32,12 +32,5 @@ namespace SezBot3000v2.Services
             _logger.LogInformation($"Received Message from {message.Chat.FirstName} {message.Chat.LastName} ({message.Chat.Username} - id: {message.Chat.Id})");
             await _decoratee.Update(update);
         }
-
-        public void Client_OnUpdate(object sender, UpdateEventArgs e)
-        {
-            var message = e.Update.Message;
-            _logger.LogInformation($"Received Message from {message.Chat.FirstName} {message.Chat.LastName} ({message.Chat.Username} - id: {message.Chat.Id})");
-            _decoratee.Client_OnUpdate(sender, e);
-        }
     }
 }
