@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -15,10 +16,10 @@ namespace SezBot3000v2.Services
     public class UpdateService : IUpdateService
     {
         private readonly IBotService _botService;
-        private readonly ILogger<UpdateService> _logger;
+        private readonly ILogger<IUpdateService> _logger;
         private BotReplyBank _botReplyBank;
 
-        public UpdateService(IBotService botService, ILogger<UpdateService> logger, IOptions<BotReplyBank> botReplyBank)
+        public UpdateService(IBotService botService, ILogger<IUpdateService> logger, IOptions<BotReplyBank> botReplyBank)
         {
             _botService = botService;
             _logger = logger;
@@ -30,8 +31,6 @@ namespace SezBot3000v2.Services
             if (update.Type != UpdateType.MessageUpdate) return;
 
             var message = update.Message;
-
-            _logger.LogInformation($"Received Message from {message.Chat.FirstName} {message.Chat.LastName} ({message.Chat.Username} - id: {message.Chat.Id})");
 
             if (!message.HasAnchor(_botReplyBank.ShouldReplyAnchors)) return;
 
@@ -80,6 +79,11 @@ namespace SezBot3000v2.Services
                 await _botService.Client.SendAudioAsync(message.Chat.Id, musicToSend, musicReply.Caption, musicReply.Duration, musicReply.Performer, musicReply.Title);
                 return true;
             }
+        }
+
+        public void Client_OnUpdate(object sender, UpdateEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -21,7 +21,11 @@ namespace SezBot3000v2_Console
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IBotService, BotService>();
-            services.AddScoped<IUpdateService, UpdateServiceConsole>();
+            services.AddScoped<IUpdateService, UpdateService>();
+            services
+                .Decorate<IUpdateService, UpdateServiceDecorator>()
+                .Decorate<IUpdateService, UpdateServiceConsole>();
+
             services.AddLogging();
             services.AddOptions();
 

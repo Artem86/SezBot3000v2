@@ -25,6 +25,7 @@ namespace SezBot3000v2
         {
             services.AddMvc();
             services.AddScoped<IUpdateService, UpdateService>();
+            services.Decorate<IUpdateService, UpdateServiceDecorator>();
             services.AddSingleton<IBotService, BotService>();
             services.AddOptions();
 
