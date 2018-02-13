@@ -18,9 +18,9 @@ namespace SezBot3000v2.Controllers
 
         // POST api/update
         [HttpPost]
-        public async Task<IActionResult> Message([FromBody]Update update)
+        public IActionResult Message([FromBody]Update update)
         {
-            await _updateService.Update(update);
+            _updateService.Update(update);
             return Ok();
         }
 
